@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:logger/logger.dart';
 import 'package:sip_ua/src/rtc_session/refer_subscriber.dart';
@@ -9,7 +10,6 @@ import 'event_manager/event_manager.dart';
 import 'logger.dart';
 import 'message.dart';
 import 'rtc_session.dart';
-import 'socket.dart';
 import 'stack_trace_nj.dart';
 import 'transports/websocket_interface.dart';
 import 'ua.dart';
@@ -337,13 +337,19 @@ class SIPUAHelper extends EventManager {
   }
 
   void _notifyTransportStateListeners(TransportState state) {
-    _sipUaHelperListeners.forEach((SipUaHelperListener listener) {
+    final List<SipUaHelperListener> listeners =
+        List<SipUaHelperListener>.from(_sipUaHelperListeners);
+
+    listeners.forEach((SipUaHelperListener listener) {
       listener.transportStateChanged(state);
     });
   }
 
   void _notifyRegsistrationStateListeners(RegistrationState state) {
-    _sipUaHelperListeners.forEach((SipUaHelperListener listener) {
+    final List<SipUaHelperListener> listeners =
+        List<SipUaHelperListener>.from(_sipUaHelperListeners);
+
+    listeners.forEach((SipUaHelperListener listener) {
       listener.registrationStateChanged(state);
     });
   }
@@ -355,13 +361,19 @@ class SIPUAHelper extends EventManager {
       return;
     }
     call.state = state.state;
-    _sipUaHelperListeners.forEach((SipUaHelperListener listener) {
+    final List<SipUaHelperListener> listeners =
+        List<SipUaHelperListener>.from(_sipUaHelperListeners);
+
+    listeners.forEach((SipUaHelperListener listener) {
       listener.callStateChanged(call, state);
     });
   }
 
   void _notifyNewMessageListeners(SIPMessageRequest msg) {
-    _sipUaHelperListeners.forEach((SipUaHelperListener listener) {
+    final List<SipUaHelperListener> listeners =
+        List<SipUaHelperListener>.from(_sipUaHelperListeners);
+
+    listeners.forEach((SipUaHelperListener listener) {
       listener.onNewMessage(msg);
     });
   }
