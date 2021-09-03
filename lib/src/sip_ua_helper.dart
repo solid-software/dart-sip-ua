@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:logger/logger.dart';
 import 'package:sip_ua/src/rtc_session/refer_subscriber.dart';
@@ -9,7 +10,6 @@ import 'event_manager/event_manager.dart';
 import 'logger.dart';
 import 'message.dart';
 import 'rtc_session.dart';
-import 'socket.dart';
 import 'stack_trace_nj.dart';
 import 'transports/websocket_interface.dart';
 import 'ua.dart';
@@ -50,6 +50,14 @@ class SIPUAHelper extends EventManager {
       _ua.stop();
     } else {
       Log.w('ERROR: stop called but not started, call start first.');
+    }
+  }
+
+  void disconnect() {
+    if (_ua != null) {
+      _ua.disconnect();
+    } else {
+      Log.w('ERROR: disconnect called but not started, call start first.');
     }
   }
 
@@ -386,10 +394,12 @@ enum CallStateEnum {
 
 class Call {
   Call(this._id, this._session, this.state);
+
   final String _id;
   final RTCSession _session;
 
   String get id => _id;
+
   RTCPeerConnection get peerConnection => _session.connection;
   CallStateEnum state;
 
@@ -525,6 +535,7 @@ class CallState {
       this.stream,
       this.cause,
       this.refer});
+
   CallStateEnum state;
   ErrorCause cause;
   String originator;
@@ -543,6 +554,7 @@ enum RegistrationStateEnum {
 
 class RegistrationState {
   RegistrationState({this.state, this.cause});
+
   RegistrationStateEnum state;
   ErrorCause cause;
 }
@@ -556,12 +568,14 @@ enum TransportStateEnum {
 
 class TransportState {
   TransportState(this.state, {this.cause});
+
   TransportStateEnum state;
   ErrorCause cause;
 }
 
 class SIPMessageRequest {
   SIPMessageRequest(this.message, this.originator, this.request);
+
   dynamic request;
   String originator;
   Message message;
@@ -569,8 +583,11 @@ class SIPMessageRequest {
 
 abstract class SipUaHelperListener {
   void transportStateChanged(TransportState state);
+
   void registrationStateChanged(RegistrationState state);
+
   void callStateChanged(Call call, CallState state);
+
   //For SIP messaga coming
   void onNewMessage(SIPMessageRequest msg);
 }

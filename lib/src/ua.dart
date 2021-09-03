@@ -278,6 +278,7 @@ class UA extends EventManager {
   /**
    * Gracefully close.
    *
+   * Unregisters from the sip server and closes the connection.
    */
   void stop() {
     logger.debug('stop()');
@@ -294,6 +295,30 @@ class UA extends EventManager {
     // Close registrator.
     _registrator.close();
 
+    // If there are session wait a bit so CANCEL/BYE can be sent and their responses received.
+    _disconnectFromSipServer();
+  }
+
+  /**
+   * Disconnects from the sip server.
+   *
+   */
+  void disconnect() {
+    logger.debug('disconnect()');
+
+    // Remove dynamic settings.
+    _dynConfiguration = null;
+
+    if (_status == C.STATUS_USER_CLOSED) {
+      logger.debug('UA is closed');
+
+      return;
+    }
+
+    _disconnectFromSipServer();
+  }
+
+  void _disconnectFromSipServer() {
     // If there are session wait a bit so CANCEL/BYE can be sent and their responses received.
     int num_sessions = _sessions.length;
 
@@ -792,9 +817,9 @@ class UA extends EventManager {
     return;
   }
 
-/**
- * Transport event handlers
- */
+  /**
+   * Transport event handlers
+   */
 
 // Transport connecting event.
   void onTransportConnecting(WebSocketInterface socket, int attempts) {
